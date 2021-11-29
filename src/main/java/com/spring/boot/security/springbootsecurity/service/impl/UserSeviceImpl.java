@@ -46,7 +46,9 @@ public class UserSeviceImpl implements UserDetailsService {
         passwordEncoder.matches("123",encode);
 
         // 3. 返回用户信息
+        // springSecurity的角色命名有严格的要求，必须以ROLE_xxx命名，
+        // 但是在SecurityConfig.java文件里面需要去掉ROLE_前缀
         return new User("admin", encode,
-                AuthorityUtils.commaSeparatedStringToAuthorityList("admin,test"));
+                AuthorityUtils.commaSeparatedStringToAuthorityList("admin,test,ROLE_tanyi"));
     }
 }
