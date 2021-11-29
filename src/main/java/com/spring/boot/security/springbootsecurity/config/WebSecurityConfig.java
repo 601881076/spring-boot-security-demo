@@ -56,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .defaultSuccessUrl("/index", true)
 
 
-                // 自定义登录失败跳转
+                // 自定义登录失败跳转 aaa
 //                .failureForwardUrl("/toError")
                 // 自定义登录失败跳转处理器(同样也需要搭配loginProcesingUrl 方法使用)
                 .failureHandler(new MyAuthenticationFailureHandler("https://blog.csdn.net/wangjunjun2008/article/details/9407219"))
