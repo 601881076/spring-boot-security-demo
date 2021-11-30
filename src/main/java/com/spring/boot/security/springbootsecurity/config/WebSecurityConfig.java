@@ -1,7 +1,9 @@
 package com.spring.boot.security.springbootsecurity.config;
 
+import com.spring.boot.security.springbootsecurity.handler.MyAccessDeniedHandler;
 import com.spring.boot.security.springbootsecurity.handler.MyAuthenticationFailureHandler;
 import com.spring.boot.security.springbootsecurity.handler.MyAuthenticationSuccessHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private MyAccessDeniedHandler myAccessDeniedHandler;
     /**
      * http请求处理
      * 包含拦截、登录页面跳转等
@@ -45,10 +49,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // https://blog.csdn.net/qq_34975710/article/details/110232128
                 // successForwardUrl 与 defaultForwardUrl
                 // 当使用successForwardUrl时，对应controller 必须进行重定向返回
-//                .successForwardUrl("/index");
+                .successForwardUrl("/index")
 
                 // 自定义登录成功跳转处理器(需搭配 loginProcesingUrl 方法使用)
-                .successHandler(new MyAuthenticationSuccessHandler("http://www.baidu.com"))
+//                .successHandler(new MyAuthenticationSuccessHandler("http://www.baidu.com"))
 
 
                 // 当使用defaultSuccessUrl时，第二个参数决定登录成功后是跳转至登录成功页面(true),
@@ -57,9 +61,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
                 // 自定义登录失败跳转 aaa
-//                .failureForwardUrl("/toError")
+                .failureForwardUrl("/toError")
                 // 自定义登录失败跳转处理器(同样也需要搭配loginProcesingUrl 方法使用)
-                .failureHandler(new MyAuthenticationFailureHandler("https://blog.csdn.net/wangjunjun2008/article/details/9407219"))
+//                .failureHandler(new MyAuthenticationFailureHandler("https://blog.csdn.net/wangjunjun2008/article/details/9407219"))
 
                 // 自定义登录用户名参数，必须和登录表单中的用户名称name一致
                 .usernameParameter("username")
@@ -87,14 +91,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 拥有admiN, admin 权限的用户都可以访问main1.html
                 // .antMatchers("/main1.html").hasAnyAuthority("admiN","admin")
 
-                // 根据角色控制url，角色命名严格区分大小写且无法以ROLE开头
-                // .antMatchers("/main1.html").hasRole("tanyi")
+                // 根据角色控制url，角色命名严格区分大小写且无法以ROLE开头 （当antMatchers 与 anyRequest().access()共存时，优先antMatchers的校验）
+//                 .antMatchers("/main1.html").hasRole("tanyi")
                 // .antMatchers("/main1.html").hasAnyRole("tanyi,tanyi1")
 
                 // 根据IP地址控制
                 // .antMatchers("/main1.html").hasIpAddress("127.0.0.1")
                 // 所有请求必须被认证通过后才能被访问
-                .anyRequest().authenticated();
+//                .anyRequest().authenticated()
+
+                // 自定义逻辑
+                .anyRequest().access("@myServiceImpl.hasPermission(request, authentication)")
+        ;
+
+        // 异常处理
+        http.exceptionHandling()
+                // 设置访问受限后交给 myAccessDeniedHandler 对象进行处理。
+                .accessDeniedHandler(myAccessDeniedHandler);
 
         // 关闭csrf防护
         http.csrf().disable();
