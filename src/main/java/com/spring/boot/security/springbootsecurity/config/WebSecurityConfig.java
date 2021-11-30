@@ -1,8 +1,6 @@
 package com.spring.boot.security.springbootsecurity.config;
 
 import com.spring.boot.security.springbootsecurity.handler.MyAccessDeniedHandler;
-import com.spring.boot.security.springbootsecurity.handler.MyAuthenticationFailureHandler;
-import com.spring.boot.security.springbootsecurity.handler.MyAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -98,7 +96,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 根据IP地址控制
                 // .antMatchers("/main1.html").hasIpAddress("127.0.0.1")
                 // 所有请求必须被认证通过后才能被访问
-//                .anyRequest().authenticated()
+                .anyRequest().authenticated()
 
                 // 自定义逻辑
                 .anyRequest().access("@myServiceImpl.hasPermission(request, authentication)")
