@@ -3,13 +3,17 @@ package com.spring.boot.security.springbootsecurity.config;
 import com.spring.boot.security.springbootsecurity.handler.MyAccessDeniedHandler;
 import com.spring.boot.security.springbootsecurity.handler.MyAuthenticationFailureHandler;
 import com.spring.boot.security.springbootsecurity.handler.MyAuthenticationSuccessHandler;
+import com.spring.boot.security.springbootsecurity.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 /**
  * @Description: security 配置类
@@ -26,6 +30,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private MyAccessDeniedHandler myAccessDeniedHandler;
+
+    @Autowired
+    private UserServiceImpl userService;
+
+    @Autowired
+    private PersistentTokenRepository persistentTokenRepository;
     /**
      * http请求处理
      * 包含拦截、登录页面跳转等
@@ -109,6 +119,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 设置访问受限后交给 myAccessDeniedHandler 对象进行处理。
                 .accessDeniedHandler(myAccessDeniedHandler);
 
+        // 实现rememberMe功能
+        http.rememberMe()
+            // 设定前端传入的name参数
+//            .rememberMeParameter("remember")
+            // 自定义失效时间，默认2周，单位S
+//            .tokenValiditySeconds(60)
+            // 自定义remember功能实现
+//            .rememberMeServices()
+            // 自定义登录逻辑
+            .userDetailsService(userService)
+            // 指定存储位置
+            .tokenRepository(persistentTokenRepository)
+        ;
         // 关闭csrf防护
         http.csrf().disable();
     }
