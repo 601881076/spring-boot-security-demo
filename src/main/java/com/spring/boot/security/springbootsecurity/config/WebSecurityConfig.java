@@ -116,7 +116,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 异常处理
         http.exceptionHandling()
-                // 设置访问受限后交给 myAccessDeniedHandler 对象进行处理。
+                // 自定义访问受限校验。设置访问受限后交给 myAccessDeniedHandler 对象进行处理。
                 .accessDeniedHandler(myAccessDeniedHandler);
 
         // 实现rememberMe功能
