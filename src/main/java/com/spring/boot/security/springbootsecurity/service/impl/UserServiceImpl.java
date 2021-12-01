@@ -50,6 +50,6 @@ public class UserServiceImpl implements UserDetailsService {
         // springSecurity的角色命名有严格的要求，必须以ROLE_xxx命名，
         // 但是在SecurityConfig.java文件里面需要去掉ROLE_前缀
         return new User("admin", encode,
-                AuthorityUtils.commaSeparatedStringToAuthorityList("admin,test,ROLE_tanyi,/main.html"));
+                AuthorityUtils.commaSeparatedStringToAuthorityList("admin,test,ROLE_tanyi,ROLE_yh,/main.html"));
     }
 }
