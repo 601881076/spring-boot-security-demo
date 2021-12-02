@@ -57,6 +57,18 @@
             <version>8.0.18</version>
         </dependency>
 
+        <!--thymeleaf springsecurity5 依赖
+        前后端不分离时可以采用thymeleaf来进行前端权限控制
+        -->
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+        </dependency>
+        <!--thymeleaf依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

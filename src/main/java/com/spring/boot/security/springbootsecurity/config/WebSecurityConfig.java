@@ -1,16 +1,13 @@
 package com.spring.boot.security.springbootsecurity.config;
 
 import com.spring.boot.security.springbootsecurity.handler.MyAccessDeniedHandler;
-import com.spring.boot.security.springbootsecurity.handler.MyAuthenticationFailureHandler;
-import com.spring.boot.security.springbootsecurity.handler.MyAuthenticationSuccessHandler;
+import com.spring.boot.security.springbootsecurity.handler.MyLogoutHandler;
 import com.spring.boot.security.springbootsecurity.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -28,14 +25,22 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    /** 自定义403访问受限处理器*/
     @Autowired
     private MyAccessDeniedHandler myAccessDeniedHandler;
 
+    /** 自定义登录逻辑*/
     @Autowired
     private UserServiceImpl userService;
 
+    /** 用于存储用户登录令牌的持久层对象*/
     @Autowired
     private PersistentTokenRepository persistentTokenRepository;
+
+    /** 自定义登出成功逻辑*/
+    @Autowired
+    private MyLogoutHandler myLogoutHandler;
+
     /**
      * http请求处理
      * 包含拦截、登录页面跳转等
@@ -108,10 +113,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 根据IP地址控制
                 // .antMatchers("/main1.html").hasIpAddress("127.0.0.1")
                 // 所有请求必须被认证通过后才能被访问
-//                .anyRequest().authenticated()
+                .anyRequest().authenticated()
 
                 // 自定义逻辑
-                .anyRequest().access("@myServiceImpl.hasPermission(request, authentication)")
+//                .anyRequest().access("@myServiceImpl.hasPermission(request, authentication)")
         ;
 
         // 异常处理
@@ -131,6 +136,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .userDetailsService(userService)
             // 指定存储位置
             .tokenRepository(persistentTokenRepository)
+        ;
+
+        /**
+         * 登出
+         * spring Security登出主要做两件事情
+         * 1. 清除httpSession
+         * 2. 清除当前authentic认证对象。
+         * */
+        http.logout()
+            // 设置登出的Url
+            .logoutUrl("/userLogout")
+            // 设置登出之后跳转的页面
+            .logoutSuccessUrl("/login.html")
+                // 自定义登出处理器
+            .addLogoutHandler(myLogoutHandler)
         ;
         // 关闭csrf防护
         http.csrf().disable();
