@@ -1,5 +1,5 @@
 spring:
-  # ÅäÖÃÊı¾İÔ´
+  # é…ç½®æ•°æ®æº
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://rm-bp10yn648kyewh933co.mysql.rds.aliyuncs.com:3306/ygdb?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
